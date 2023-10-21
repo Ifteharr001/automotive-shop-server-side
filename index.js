@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -35,6 +35,33 @@ async function run() {
     const cursor = brandCollection.find();
     const result = await cursor.toArray();
     res.send(result);
+   })
+
+   app.put('/card/:id', async(req, res) => {
+    const id = req.params.id;
+    const filter = {_id: new ObjectId(id)}
+    const options = { upsert: true };
+    const updatedCard = req.body;
+    const card = {
+      $set: {
+        name: updatedCard.name,
+        brand: updatedCard.brand,
+        image: updatedCard.image,
+        carbrand: updatedCard.carbrand,
+        price: updatedCard.price,
+        description: updatedCard.description,
+        rating: updatedCard.rating,
+      }
+    }
+    const result = await brandCollection.updateOne(filter, card, options)
+    res.send(result);
+   })
+
+   app.get('/card/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)}
+    const result = await brandCollection.findOne(query);
+    res.send(result)
    })
 
     app.post('/card', async(req, res) => {
