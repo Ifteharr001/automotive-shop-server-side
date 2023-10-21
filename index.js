@@ -29,6 +29,8 @@ async function run() {
     await client.connect();
 
     const brandCollection = client.db('brandDB').collection('brand');
+    const userCollection = client.db('brandDB').collection('userBrand');
+
 
 
    app.get('/card', async(req, res) => {
@@ -71,6 +73,26 @@ async function run() {
         res.send(result)
     })
 
+
+        app.get('/userCard', async(req, res) => {
+            const cursor = userCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.delete('/userCard/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await userCollection.deleteOne( query);
+            res.send(result);
+        })
+
+        app.post('/userCard', async(req, res) => {
+            const userProduct = req.body;
+            console.log(userProduct);
+            const result = await userCollection.insertOne(userProduct);
+            res.send(result)
+        })
 
 
 
